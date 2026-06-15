@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = 'https://college-chatbot-20tj.onrender.com/api';
 
 async function request(path, options = {}) {
   const token = localStorage.getItem('bietbot_token');
