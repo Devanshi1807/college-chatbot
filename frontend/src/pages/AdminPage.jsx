@@ -1,0 +1,115 @@
+import { useState, useEffect } from 'react';
+import { Link, Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import api from '../api';
+import FaqManager, { ContactManager, DateManager, CategoryManager } from './admin/Managers';
+
+const TABS = [
+  { id: 'faqs', label: 'FAQs' },
+  { id: 'categories', label: 'Categories' },
+  { id: 'contacts', label: 'Contacts' },
+  { id: 'dates', label: 'Dates' },
+  { id: 'stats', label: 'Stats' },
+];
+
+export default function AdminPage() {
+  const { admin, loading, logout, isAuthenticated } = useAuth();
+  const [tab, setTab] = useState('faqs');
+  const [categories, setCategories] = useState([]);
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      api.getCategories().then(setCategories);
+      if (tab === 'stats') api.getStats().then(setStats);
+    }
+  }, [isAuthenticated, tab]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-slate-500">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-100">
+      <header className="bg-white border-b shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="font-semibold text-slate-800">BIET Bot Admin</h1>
+            <p className="text-xs text-slate-500">Logged in as {admin?.email}</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link to="/" className="text-sm text-blue-600 hover:underline">View Chat</Link>
+            <button onClick={logout} className="text-sm text-red-600 hover:underline">Logout</button>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-5xl mx-auto px-4 py-6">
+        <div className="flex flex-wrap gap-2 mb-6">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                tab === t.id
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="bg-slate-50 rounded-xl p-4">
+          {tab === 'faqs' && <FaqManager categories={categories} />}
+          {tab === 'categories' && <CategoryManager />}
+          {tab === 'contacts' && <ContactManager />}
+          {tab === 'dates' && <DateManager />}
+          {tab === 'stats' && (
+            <div>
+              <h2 className="text-lg font-semibold mb-4">Chat Analytics</h2>
+              {stats ? (
+                <div className="grid sm:grid-cols-3 gap-4 mb-6">
+                  <div className="bg-white rounded-lg p-4 border">
+                    <p className="text-2xl font-bold text-blue-600">{stats.totalChats}</p>
+                    <p className="text-sm text-slate-500">Total Messages</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border">
+                    <p className="text-2xl font-bold text-green-600">{stats.matchedChats}</p>
+                    <p className="text-sm text-slate-500">FAQ Matches</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border">
+                    <p className="text-2xl font-bold text-indigo-600">{stats.matchRate}%</p>
+                    <p className="text-sm text-slate-500">Match Rate</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-slate-500">Loading stats...</p>
+              )}
+              {stats?.recentLogs?.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="font-medium text-slate-700">Recent Questions</h3>
+                  {stats.recentLogs.map((log) => (
+                    <div key={log.id} className="bg-white border rounded-lg p-3 text-sm">
+                      <p className="font-medium text-slate-800">{log.userMessage}</p>
+                      <p className="text-slate-500 text-xs mt-1 truncate">{log.botResponse.slice(0, 100)}...</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

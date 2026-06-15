@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.markdown-body strong {
+  font-weight: 600;
+}
+
+.markdown-body p {
+  margin: 0.25rem 0;
+}
+
+.markdown-body ul {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+}
+
+.markdown-body li {
+  margin: 0.25rem 0;
+}
