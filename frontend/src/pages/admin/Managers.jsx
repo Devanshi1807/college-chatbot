@@ -280,7 +280,7 @@ export function DateManager() {
   const openEdit = (d) => {
     setForm({
       title: d.title,
-      date: d.date.slice(0, 10),
+     date: d.date ? d.date.slice(0, 10) : '',
       description: d.description || '',
       category: d.category,
       isActive: d.isActive,
@@ -313,7 +313,9 @@ export function DateManager() {
           <div key={d.id} className="bg-white border rounded-lg p-4 flex justify-between">
             <div>
               <p className="font-medium">{d.title}</p>
-              <p className="text-sm text-slate-600">{formatDate(d.date)} · {d.category}</p>
+              <p className="text-sm text-slate-600">
+  {d.date ? formatDate(d.date) : "No Date"} · {d.category}
+</p>
             </div>
             <div className="flex gap-2">
               <button onClick={() => openEdit(d)} className="text-sm text-blue-600">Edit</button>
