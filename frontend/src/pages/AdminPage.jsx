@@ -7,6 +7,7 @@ import FaqManager, {
   DateManager,
   CategoryManager,
 } from "./admin/Managers";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 const TABS = [
   { id: "faqs", label: "FAQs" },
@@ -58,8 +59,8 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-slate-100">
       {/* Header */}
-      <header className="bg-white border-b shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <header className="bg-white border-b">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-slate-800">
               BIET Bot Admin
@@ -109,87 +110,97 @@ export default function AdminPage() {
         {/* Tab Content */}
         <div className="bg-slate-50 rounded-xl p-4">
           {tab === "faqs" && (
-            <FaqManager categories={categories} />
+            <ErrorBoundary>
+              <FaqManager categories={categories} />
+            </ErrorBoundary>
           )}
 
           {tab === "categories" && (
-            <CategoryManager />
+            <ErrorBoundary>
+              <CategoryManager />
+            </ErrorBoundary>
           )}
 
           {tab === "contacts" && (
-            <ContactManager />
+            <ErrorBoundary>
+              <ContactManager />
+            </ErrorBoundary>
           )}
 
           {tab === "dates" && (
-            <DateManager />
+            <ErrorBoundary>
+              <DateManager />
+            </ErrorBoundary>
           )}
 
           {tab === "stats" && (
-            <div>
-              <h2 className="text-lg font-semibold mb-4">
-                Chat Analytics
-              </h2>
+            <ErrorBoundary>
+              <div>
+                <h2 className="text-lg font-semibold mb-4">
+                  Chat Analytics
+                </h2>
 
-              {stats ? (
-                <>
-                  <div className="grid sm:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-white rounded-lg p-4 border">
-                      <p className="text-2xl font-bold text-blue-600">
-                        {stats.totalChats ?? 0}
-                      </p>
-                      <p className="text-sm text-slate-500">
-                        Total Messages
-                      </p>
+                {stats ? (
+                  <>
+                    <div className="grid sm:grid-cols-3 gap-4 mb-6">
+                      <div className="bg-white rounded-lg p-4 border">
+                        <p className="text-2xl font-bold text-blue-600">
+                          {stats.totalChats ?? 0}
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          Total Messages
+                        </p>
+                      </div>
+
+                      <div className="bg-white rounded-lg p-4 border">
+                        <p className="text-2xl font-bold text-green-600">
+                          {stats.matchedChats ?? 0}
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          FAQ Matches
+                        </p>
+                      </div>
+
+                      <div className="bg-white rounded-lg p-4 border">
+                        <p className="text-2xl font-bold text-indigo-600">
+                          {stats.matchRate ?? 0}%
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          Match Rate
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="bg-white rounded-lg p-4 border">
-                      <p className="text-2xl font-bold text-green-600">
-                        {stats.matchedChats ?? 0}
-                      </p>
-                      <p className="text-sm text-slate-500">
-                        FAQ Matches
-                      </p>
-                    </div>
+                    {stats.recentLogs?.length > 0 && (
+                      <div className="space-y-2">
+                        <h3 className="font-medium text-slate-700">
+                          Recent Questions
+                        </h3>
 
-                    <div className="bg-white rounded-lg p-4 border">
-                      <p className="text-2xl font-bold text-indigo-600">
-                        {stats.matchRate ?? 0}%
-                      </p>
-                      <p className="text-sm text-slate-500">
-                        Match Rate
-                      </p>
-                    </div>
-                  </div>
+                        {stats.recentLogs.map((log) => (
+                          <div
+                            key={log.id}
+                            className="bg-white border rounded-lg p-3 text-sm"
+                          >
+                            <p className="font-medium text-slate-800">
+                              {log.userMessage}
+                            </p>
 
-                  {stats.recentLogs?.length > 0 && (
-                    <div className="space-y-2">
-                      <h3 className="font-medium text-slate-700">
-                        Recent Questions
-                      </h3>
-
-                      {stats.recentLogs.map((log) => (
-                        <div
-                          key={log.id}
-                          className="bg-white border rounded-lg p-3 text-sm"
-                        >
-                          <p className="font-medium text-slate-800">
-                            {log.userMessage}
-                          </p>
-
-                          <p className="text-slate-500 text-xs mt-1 truncate">
-                            {log.botResponse?.slice(0, 100)}...
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <p className="text-slate-500">
-                  Loading stats...
-                </p>
-              )}
-            </div>
+                            <p className="text-slate-500 text-xs mt-1 truncate">
+                              {log.botResponse?.slice?.(0, 100) ||
+                                "No response"}
+                              ...
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-slate-500">Loading stats...</p>
+                )}
+              </div>
+            </ErrorBoundary>
           )}
         </div>
       </div>
