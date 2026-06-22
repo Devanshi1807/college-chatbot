@@ -29,7 +29,9 @@ export default function FaqManager({ categories }) {
     api.getFaqs().then(setFaqs).finally(() => setLoading(false));
   };
 
-  useEffect(load, []);
+ useEffect(() => {
+  load();
+}, []);
 
   const openCreate = () => {
     setForm({
@@ -198,7 +200,9 @@ export function ContactManager() {
   const [form, setForm] = useState({ department: '', phone: '', email: '', officeHours: '', location: '', isActive: true });
 
   const load = () => api.getContacts().then(setContacts);
-  useEffect(load, []);
+ useEffect(() => {
+  load();
+}, []);
 
   const openCreate = () => {
     setForm({ department: '', phone: '', email: '', officeHours: '', location: '', isActive: true });
@@ -270,7 +274,9 @@ export function DateManager() {
   const [form, setForm] = useState({ title: '', date: '', description: '', category: 'admission', isActive: true });
 
   const load = () => api.getDates().then(setDates);
-  useEffect(load, []);
+  useEffect(() => {
+  load();
+}, []);
 
   const openCreate = () => {
     setForm({ title: '', date: '', description: '', category: 'admission', isActive: true });
@@ -359,7 +365,9 @@ export function CategoryManager() {
   const [form, setForm] = useState({ name: '', description: '', icon: '', sortOrder: 0, isActive: true });
 
   const load = () => api.getCategories().then(setCategories);
-  useEffect(load, []);
+ useEffect(() => {
+  load();
+}, []);
 
   const openCreate = () => {
     setForm({ name: '', description: '', icon: '', sortOrder: 0, isActive: true });
